@@ -13,7 +13,12 @@
                     "workload": "network-perf",
                     "command": "./run_hostnetwork_network_test_fromgit.sh test_cloud",
                     "env": {
-                        "COMPARE": "false"
+                        "COMPARE": "true",
+                        "GOLD_OCP_VERSION": "4.7",
+                        "GOLD_SDN": "openshiftsdn",
+                        "COMPARE_WITH_GOLD": "true",
+                        "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                        "GSHEET_KEY_LOCATION": "/tmp/key.json"
                     }
                 },
                 {
@@ -21,7 +26,12 @@
                     "workload": "network-perf",
                     "command": "./run_pod_network_test_fromgit.sh test_cloud",
                     "env": {
-                        "COMPARE": "false"
+                        "COMPARE": "true",
+                        "GOLD_OCP_VERSION": "4.7",
+                        "GOLD_SDN": "openshiftsdn",
+                        "COMPARE_WITH_GOLD": "true",
+                        "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                        "GSHEET_KEY_LOCATION": "/tmp/key.json"
                     }
                 },
                 {
@@ -29,7 +39,12 @@
                     "workload": "network-perf",
                     "command": "./run_serviceip_network_test_fromgit.sh test_cloud",
                     "env": {
-                        "COMPARE": "false"
+                        "COMPARE": "true",
+                        "GOLD_OCP_VERSION": "4.7",
+                        "GOLD_SDN": "openshiftsdn",
+                        "COMPARE_WITH_GOLD": "true",
+                        "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                        "GSHEET_KEY_LOCATION": "/tmp/key.json"
                     }
                 }
             ]
@@ -192,6 +207,23 @@
                 "CLEANUP_WHEN_FINISH": "false",
                 "CLEANUP": "false"
             }
-        }
+        },
+        {
+            "name": "router",
+            "workload": "router-perf-v2",
+            "command": "./ingress-performance.sh",
+            "env": {
+                "THROUGHPUT_TOLERANCE": "10",
+                "LATENCY_TOLERANCE": "10",
+                "LARGE_SCALE_THRESHOLD": "19",
+                "ENGINE": "local",
+                "LARGE_SCALE_ROUTES": "400",
+                "COMPARE": "true",
+                "GOLD_OCP_VERSION": "4.7",
+                "GOLD_SDN": "openshiftsdn",
+                "COMPARE_WITH_GOLD": "true",
+                "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
+                "GSHEET_KEY_LOCATION": "/tmp/key.json"
+        }},
     ]
 }
