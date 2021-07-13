@@ -19,23 +19,7 @@ from kubernetes.client import models as k8s
 
 class AbstractOpenshiftInstaller(ABC):
     def __init__(self, dag, version, release_stream, latest_release, platform, profile):
-        self.exec_config = {
-            "pod_override": k8s.V1Pod(
-                spec=k8s.V1PodSpec(
-                    containers=[
-                        k8s.V1Container(
-                            name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
-                            image_pull_policy="Always",
-                            volume_mounts=[
-                                kubeconfig.get_empty_dir_volume_mount()]
-
-                        )
-                    ],
-                    volumes=[kubeconfig.get_empty_dir_volume_mount()]
-                )
-            )
-        }
+        self.exec_config = var_loader.get_default_executor_config()
 
         # General DAG Configuration
         self.dag = dag
@@ -82,7 +66,7 @@ class AbstractOpenshiftInstaller(ABC):
     
 
     def get_install_task(self):
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, "install").get_index_task() 
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile, "install").get_index_task() 
         install_task = self._get_task(operation="install")
         install_task >> indexer 
         return install_task

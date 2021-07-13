@@ -19,37 +19,15 @@ from kubernetes.client import models as k8s
 
 
 class E2EBenchmarks():
-    def __init__(self, dag, version, release_stream, latest_release, platform, profile, default_args):
+    def __init__(self, dag, version, release_stream, platform, profile, default_args):
 
-        self.exec_config = {
-            "pod_override": k8s.V1Pod(
-                spec=k8s.V1PodSpec(
-                    containers=[
-                        k8s.V1Container(
-                            name="base",
-                            image="quay.io/keithwhitley4/airflow-ansible:2.1.0",
-                            image_pull_policy="Always",
-                            env=[
-                                kubeconfig.get_kubeadmin_password(
-                        version, platform, profile)
-                            ],
-                            volume_mounts=[
-                                kubeconfig.get_kubeconfig_volume_mount()]
-
-                        )
-                    ],
-                    volumes=[kubeconfig.get_kubeconfig_volume(
-                        version, platform, profile)]
-                )
-            )
-        }
+        self.exec_config = var_loader.get_executor_config_with_cluster_access(version, platform, profile)
 
         # General DAG Configuration
         self.dag = dag
         self.platform = platform  # e.g. aws
         self.version = version  # e.g. stable/.next/.future
         self.release_stream = release_stream
-        self.latest_release = latest_release # latest relase from the release stream
         self.profile = profile  # e.g. default/ovn
         self.default_args = default_args
 
@@ -61,15 +39,21 @@ class E2EBenchmarks():
         # Specific Task Configuration
         self.vars = var_loader.build_task_vars(
             task="benchmarks", version=version, platform=platform, profile=profile)
+        self.git_name=self._git_name()
         self.env = {
-            "OPENSHIFT_CLIENT_LOCATION": self.latest_release["openshift_client_location"],
             "SNAPPY_DATA_SERVER_URL": self.SNAPPY_DATA_SERVER_URL,
             "SNAPPY_DATA_SERVER_USERNAME": self.SNAPPY_DATA_SERVER_USERNAME,
-            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD
+            "SNAPPY_DATA_SERVER_PASSWORD": self.SNAPPY_DATA_SERVER_PASSWORD,
+            "SNAPPY_USER_FOLDER": self.git_name
         }
 
         
-
+    def _git_name(self):
+        git_username = var_loader.get_git_user()
+        if git_username == 'cloud-bulldozer':
+            return f"perf-ci"
+        else: 
+            return f"{git_username}"
 
     def get_benchmarks(self):
         benchmarks = self._get_benchmarks(self.vars["benchmarks"])
@@ -96,7 +80,7 @@ class E2EBenchmarks():
                     self._add_indexers(benchmark)
 
     def _add_indexer(self, benchmark): 
-        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile, benchmark.task_id).get_index_task() 
+        indexer = StatusIndexer(self.dag, self.version, self.release_stream, self.platform, self.profile, benchmark.task_id).get_index_task() 
         benchmark >> indexer 
 
     def _get_benchmark(self, benchmark):

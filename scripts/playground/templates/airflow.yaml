@@ -19,7 +19,7 @@ spec:
     helm:
       releaseName: airflow
       values: |-
-        defaultAirflowTag: 2.1.0-python3.8
+        defaultAirflowTag: 2.1.1rc1-python3.8
         config:
           logging:
             colored_console_log: "True"
@@ -31,13 +31,18 @@ spec:
             verify_certs: "False"
             ssl_show_warn: "False"
           kubernetes:
-            delete_worker_pods: True
+            delete_worker_pods: False
           core:
             DAGBAG_IMPORT_TIMEOUT: 300
             killed_task_cleanup_time: 604800
           scheduler:
             scheduler_heartbeat_sec: 10
             processor_poll_interval: 30
+          webserver:
+            base_url: http://$_airflow_namespace.$_cluster_domain
+            instance_name: $_remote_user
+            expose_config: True
+            default_ui_timezone: America/New_York
         dags:
           gitSync:
             enabled: true

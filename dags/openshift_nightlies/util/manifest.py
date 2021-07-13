@@ -64,6 +64,6 @@ class Manifest():
 
     def get_releases(self):
         self.get_cloud_releases()
-#        self.get_baremetal_releases()
-#        self.get_openstack_releases()
+        self.get_baremetal_releases()
+        self.get_openstack_releases()
         return self.releases
