@@ -224,6 +224,6 @@
                 "COMPARE_WITH_GOLD": "true",
                 "EMAIL_ID_FOR_RESULTS_SHEET": "msheth@redhat.com",
                 "GSHEET_KEY_LOCATION": "/tmp/key.json"
-        }},
+        }}
     ]
 }
