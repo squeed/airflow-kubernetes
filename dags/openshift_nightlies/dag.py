@@ -141,7 +141,7 @@ class OpenstackNightlyDAG(AbstractOpenshiftNightlyDAG):
             chain(*benchmark_tasks)
             benchmark_tasks[-1] >> cleanup_cluster
 
-        install_cluster >> benchmarks
+        install_cluster >> benchmarks >> utils
 
     def _get_openshift_installer(self):
         return jetpack.OpenstackJetpackInstaller(self.dag, self.version, self.release_stream, self.latest_release, self.platform, self.profile)
